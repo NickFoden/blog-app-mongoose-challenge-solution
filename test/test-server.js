@@ -106,25 +106,33 @@ describe('Blog Test', function(){
 				})
 		})
 	})
+
+	describe('Updating a post', function(){
+		it('Should update a post title', function(){
+			 const newTitle = {
+			 	title: 'This is a new title for this post'
+			 };
+
+			return BlogPost
+			.findOne()
+			.exec()
+			.then(function(BlogPost){
+				newTitle.id = BlogPost.id;
+				return chai.request(app)
+					.put(`/posts/${BlogPost.id}`)
+					.send(newTitle);
+			})
+			.then(function(res){
+				res.should.have.status(201);
+
+				return BlogPost.findById(newTitle.id).exec();
+			})
+			.then(function(BlogPost){
+				BlogPost.title.should.equal(newTitle.title);
+			})
+			
+		})
+	})
 });
-
-/*onst blogPostSchema = mongoose.Schema({
-  author: {
-    firstName: String,
-    lastName: String
-  },
-  title: {type: String, required: true},
-  content: {type: String},
-  created: {type: Date, default: Date.now}
-});*/
-
-
-
-
-
-
-
-
-
 
 //End
