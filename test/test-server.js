@@ -1,7 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const faker = require('faker');
-const mongoose - require('mongoose');
+const mongoose = require('mongoose');
 const should = chai.should();
 
 const {TEST_DATABASE_URL} = require('../config');
@@ -10,15 +10,6 @@ const {closeServer, runServer, app} =  require('../server');
 
 chai.use(chaiHttp);
 
-onst blogPostSchema = mongoose.Schema({
-  author: {
-    firstName: String,
-    lastName: String
-  },
-  title: {type: String, required: true},
-  content: {type: String},
-  created: {type: Date, default: Date.now}
-});
 
 function generateBlogData(){
 	return {
@@ -31,7 +22,7 @@ function generateBlogData(){
 	}
 }
 
-function seeBlogData(){
+function seedBlogData(){
 	console.info('seeding blog data');
 	const seedData = [];
 	for(let i=1; i<=5; i++){
@@ -59,5 +50,59 @@ describe('Blog Test', function(){
 		return closeServer();
 	});
 
+	describe('Get endpoint', function(){
+		it('should return 5 blog posts', function(){
+			let res;
+			return chai.request(app)
+			.get('/posts')
+			.then(function(_res){
+				res = _res;
+				res.should.have.status(200);
+				res.body.should.have.length.of.at.least(1);
+				return BlogPost.count();
+			})
+			.then(function(count){
+				res.body.should.have.length.of(count);
+			});
+		});
+	});
 
-}
+	describe('Post new blogpost' function(){
+		it('Should create new Blog Post', function(){
+			const newPost = generateBlogData();
+			return chai.request(app)
+			.post('/posts')
+			.send(newPost)
+			.then(function(res){
+				res.should.have.status(201);
+				res.should.be.json;
+				res.body.title.should.equal(newPost.title);
+				res.body.content.should.equal(newPost.content);
+				res.body.authorName.should.equal(newPost.authorName);
+				return BlogPost[newpost[id]];
+			})
+
+		})
+	})
+});
+
+/*onst blogPostSchema = mongoose.Schema({
+  author: {
+    firstName: String,
+    lastName: String
+  },
+  title: {type: String, required: true},
+  content: {type: String},
+  created: {type: Date, default: Date.now}
+});*/
+
+
+
+
+
+
+
+
+
+
+//End
