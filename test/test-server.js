@@ -67,7 +67,7 @@ describe('Blog Test', function(){
 		});
 	});
 
-	describe('Post new blogpost' function(){
+	describe('Post new blogpost', function(){
 		it('Should create new Blog Post', function(){
 			const newPost = generateBlogData();
 			return chai.request(app)
@@ -78,10 +78,32 @@ describe('Blog Test', function(){
 				res.should.be.json;
 				res.body.title.should.equal(newPost.title);
 				res.body.content.should.equal(newPost.content);
-				res.body.authorName.should.equal(newPost.authorName);
-				return BlogPost[newpost[id]];
+				res.body.author.should.equal(newPost.author.firstName + " " + newPost.author.lastName);
 			})
 
+		})
+	})
+
+	describe('Delete the post', function(){
+		it('Should delete a post by id', function(){
+			let deletedPost;
+			return BlogPost
+				.findOne()
+				.exec()
+				.then(function(post){
+					deletedPost = post;
+					return chai.request(app)
+						.delete(`/posts/${deletedPost.id}`)
+				})
+				.then(function(res){
+					res.should.have.status(204)
+					return BlogPost
+					.findById(deletedPost.id)
+					.exec()
+				})
+				.then(function(post){
+					should.not.exist(post)
+				})
 		})
 	})
 });
